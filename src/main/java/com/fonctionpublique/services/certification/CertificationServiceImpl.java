@@ -61,9 +61,9 @@ public class CertificationServiceImpl implements CertificationService {
     public String generateAttestationNumber(int id) {
         Optional<Structure> structure = structureRepository.findById(1);
         Optional<Compteur> compteur = compteurRepository.findById(1);
-        return Params.PREFIX + Calendar.getInstance().get(Calendar.YEAR)+""+ structure.get().getNatureAttestation() + numeroCompteur()
-                + "_" + structure.get().getAbreviationNomStructure()
-                + structure.get().getReference();
+        return structure.get().getAbreviationNomStructure() + structure.get().getReference()+"\n &nbsp  &nbsp"+
+                Params.PREFIX + Calendar.getInstance().get(Calendar.YEAR)+" "+ structure.get().getNatureAttestation() + numeroCompteur();
+
     }
 
     public String numeroCompteur(){

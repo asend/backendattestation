@@ -45,8 +45,8 @@ public class ProfileServiceImpl implements ProfileService {
             utilisateurRepository.findById(num).orElseGet(() -> {
 
                 Utilisateur utilisateur = new Utilisateur();
-                utilisateur.setPrenom("Ousmane");
-                utilisateur.setNom("ndong");
+                utilisateur.setPrenom("Abdou karim");
+                utilisateur.setNom("SANE");
                 utilisateur.setEmail("admin@gmail.com");
                 utilisateur.setPassword(passwordEncoder.encode("passer"));
                 utilisateur.setNin("1570199800234");

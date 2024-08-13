@@ -47,8 +47,8 @@ public void sentSetPasswordEmail(String email, String token, String fullName) {
         mimeMessageHelper.setSubject("Set Password");
         String url = Params.LIENRESTPASSWORD + token;
         mimeMessageHelper.setText(
-                   " <div> Bonjour " +fullName+
-                      "  <a href="+url+" target=\"_blank\">click pour modifier votre mot de passe</a>" +
+                   " <div>Pour la réinitialisation de votre mot de passe <br>, de votre compte dans la plateforme de demande d'attestation de non-appartenance  <br> á la fonction publique <br>  " +fullName+
+                      "  <a href="+url+" target=\"_blank\">veuillez cliquez sur ce lien suivante</a>" +
                    " </div>"
                     .formatted(email), true);
 
