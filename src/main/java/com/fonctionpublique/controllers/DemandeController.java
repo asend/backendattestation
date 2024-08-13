@@ -127,6 +127,22 @@ public class DemandeController {
         return result[0];
     }
 
+    @GetMapping("/demandebytab/{id}")
+    public Map<String, List<DemandeDTO>> getbyTab(@PathVariable("id") Integer id){
+        return demandeServiceImpl.findByDemandeurIdByStatut(id);
+    }
+
+    @GetMapping("/annuler/{id}")
+    public DemandeDTO annuler(@PathVariable("id") Integer id){
+        return demandeServiceImpl.annuler(id);
+    }
+
+    @GetMapping("/demandeActif")
+    public List<DemandeDTO> findDemandeActif() {
+        return demandeServiceImpl.demandeActif();
+    }
+
+
 
 
 }

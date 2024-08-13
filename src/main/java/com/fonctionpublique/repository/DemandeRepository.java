@@ -31,5 +31,8 @@ public interface DemandeRepository extends JpaRepository<Demande, Integer> {
     @Query("select d from Demande d where d.demandeur.id = :demandeurId and d.statut in ('cours','approuvee')")
     List<Demande> demandeByDemandeurStatut(Integer demandeurId);
 
+    @Query("select d from Demande d where d.statut in ('cours','approuvee', 'rejetee')")
+    List<Demande> demandeActif();
+
     Demande findByAttestationName(String code);
 }

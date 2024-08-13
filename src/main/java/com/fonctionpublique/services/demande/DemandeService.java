@@ -20,7 +20,6 @@ public interface DemandeService {
 
     List<DemandeDTO> findByDemandeurId(int id);
 
-
     String findAttestation(int id);
 
     Map<String,Integer> demandeByStatut();
@@ -28,4 +27,6 @@ public interface DemandeService {
     List<Demande> demandeByDemandeurStatut(Integer id);
 
     Demande getByCode(String code);
+
+    List<DemandeDTO> demandeActif();
 }

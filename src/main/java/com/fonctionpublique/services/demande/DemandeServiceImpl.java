@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -177,6 +174,32 @@ public class DemandeServiceImpl implements DemandeService {
         return demandeRepository.findByDemandeurId(id).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public Map<String, List<DemandeDTO>> findByDemandeurIdByStatut(int id) {
+        Map<String, List<DemandeDTO>> list  = new HashMap<>();
+        List<DemandeDTO> ldec = new ArrayList<>();
+        List<DemandeDTO> ldr = new ArrayList<>();
+        List<DemandeDTO> lda = new ArrayList<>();
+        list.put("DEC", ldec);
+        list.put("DR", ldr);
+        list.put("DA", lda);
+        for (DemandeDTO d : demandeRepository.findByDemandeurId(id).stream().map(this::convertToDTO).collect(Collectors.toList())) {
+            if (d.getStatut().equals("cours")){
+                ldec.add(d);
+                list.put("DEC", ldec);
+            }
+            if (d.getStatut().equals("rejetee")){
+                ldec.add(d);
+                list.put("DR", ldec);
+            }
+            if (d.getStatut().equals("approuvee")){
+                ldec.add(d);
+                list.put("DA", ldec);
+            }
+
+        }
+        return list;
+    }
+
     @Override
     public String findAttestation(int id) {
         return demandeRepository.findAttestationById(id).getUrlattestation();
@@ -215,6 +238,17 @@ public class DemandeServiceImpl implements DemandeService {
     @Override
     public Demande getByCode(String code){
         return demandeRepository.findByAttestationName(code);
+    }
+
+    @Override
+    public List<DemandeDTO> demandeActif() {
+        return demandeRepository.demandeActif().stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public DemandeDTO annuler(Integer id){
+        Demande demandeDTO = demandeRepository.findById(id).orElse(null);
+        demandeDTO.setStatut(StatusDemande.DEMANDE_SUPPRIME.getStatut());
+        return convertToDTO(demandeRepository.save(demandeDTO));
     }
 
 
