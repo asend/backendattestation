@@ -1,10 +1,8 @@
 package com.fonctionpublique.services.mail;
 
 import com.fonctionpublique.dto.DemandeDTO;
-import com.fonctionpublique.entities.Demande;
 import com.fonctionpublique.entities.Params;
 import com.fonctionpublique.enumpackage.StatusDemande;
-import com.fonctionpublique.repository.DemandeRepository;
 import com.fonctionpublique.services.ThymeleafService;
 import com.fonctionpublique.services.demande.DemandeService;
 import jakarta.mail.internet.MimeMessage;

@@ -13,8 +13,8 @@ public interface Params {
     public static final String DIRECTORYQRCOD = "/home/adminadie/Desktop/qrcode";
     public static final String DIRECTORYSIGNATURE = "/home/adminadie/Desktop/signature";
     public static final String DIRECTORYRESOURCE = "/home/adminadie/Desktop/resource";
-    public static final String LIENDEVERIFICATION = "http://10.121.220.44:8080/angular/#/verifierscan/";
-    public static final String LIENRESTPASSWORD = "http://10.121.220.44:8080/angular/#/new-password/";
+    public static final String LIENDEVERIFICATION = "fpublique-demarche.sec.gouv.sn/#/verifierscan/";
+    public static final String LIENRESTPASSWORD = "fpublique-demarche.sec.gouv.sn//#/new-password/";
     public static final String EMAILSENDER = "fpublique2024@gmail.com";*/
 
 
@@ -33,8 +33,8 @@ public interface Params {
     public static final String DIRECTORYQRCOD = System.getProperty("user.home")+"/Desktop";//"/Users/7maksacodpc/Downloads/The_QRCode/";"/home/adminadie/Desktop/qrcode/";
     public static final String DIRECTORYSIGNATURE = System.getProperty("user.home")+"/Desktop";//"/Users/7maksacodpc/Downloads/The_QRCode/";"/home/adminadie/Desktop/qrcode/";
     public static final String DIRECTORYRESOURCE = System.getProperty("user.home")+"/Desktop";//"/Users/7maksacodpc/Downloads/The_QRCode/";"/home/adminadie/Desktop/qrcode/";
-    public static final String LIENDEVERIFICATION = "https://localhost:4200/verificationattestation/";
-    public static final String LIENRESTPASSWORD = "https://localhost:4200/angular/#/new-password/";
+    public static final String LIENDEVERIFICATION = "https://localhost:4200/#/verifierscan/";
+    public static final String LIENRESTPASSWORD = "https://localhost:4200/#/new-password/";
     public static final String EMAILSENDER = "fpublique2024@gmail.com";
 
 

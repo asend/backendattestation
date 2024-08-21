@@ -44,7 +44,7 @@ public class CertificationServiceImpl implements CertificationService {
         qrCodeParams.put(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8.toString());
         qrCodeParams.put(EncodeHintType.MARGIN, 2);
 
-        BitMatrix bitMatrix = qrCodeWriter.encode(fullURL, BarcodeFormat.QR_CODE, 120, 120, qrCodeParams);
+        BitMatrix bitMatrix = qrCodeWriter.encode(fullURL, BarcodeFormat.QR_CODE, 110, 110, qrCodeParams);
 
         Path path = FileSystems.getDefault().getPath(qrCodeName);
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
@@ -61,7 +61,7 @@ public class CertificationServiceImpl implements CertificationService {
     public String generateAttestationNumber(int id) {
         Optional<Structure> structure = structureRepository.findById(1);
         Optional<Compteur> compteur = compteurRepository.findById(1);
-        return structure.get().getAbreviationNomStructure() + structure.get().getReference()+"\n &nbsp  &nbsp"+
+        return structure.get().getAbreviationNomStructure() + structure.get().getReference()+"\n"+
                 Params.PREFIX + Calendar.getInstance().get(Calendar.YEAR)+" "+ structure.get().getNatureAttestation() + numeroCompteur();
 
     }

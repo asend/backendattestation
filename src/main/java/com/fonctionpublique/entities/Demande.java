@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -45,6 +46,7 @@ public class Demande {
     private Utilisateur utilisateur;
 
     public boolean isValide() {
+        validite=false;
         LocalDate localDateTime = datetraitement.plusMonths(9).toLocalDate();
         Calendar c = Calendar.getInstance();
         //LocalDateTime now = c.getTime().getTime();
@@ -55,11 +57,17 @@ public class Demande {
         return false;
     }
 
-//    public Boolean isExpired(){
-//        LocalDate date = LocalDate.now();
-//        LocalDate expiredDate = date.plusMonths(9);
-//        dateexpiration = expiredDate;
-//        return  true;
-//    }
+    public boolean AttestionExpired(){
+
+        LocalDate currentdate = LocalDate.now();
+
+        if(currentdate.isBefore(dateexpiration)){
+
+            return this.validite= true;
+        }
+        return this.validite = false;
+    }
+
+
 
 }

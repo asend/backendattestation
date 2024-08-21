@@ -142,6 +142,14 @@ public class DemandeController {
         return demandeServiceImpl.demandeActif();
     }
 
+    @GetMapping("/qrcode/{code}")
+    public DemandeDTO getByQrCode(@PathVariable("code") String code){
+        return demandeServiceImpl.convertToDTO(demandeServiceImpl.getByCode(code));
+    }
+
+
+
+
 
 
 

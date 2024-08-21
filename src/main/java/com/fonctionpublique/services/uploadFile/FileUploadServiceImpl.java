@@ -41,9 +41,7 @@ public class FileUploadServiceImpl implements  FileUploadService{
 
         if (Files.copy(file.getInputStream(), targetLocation,
                 StandardCopyOption.REPLACE_EXISTING)!=0){
-            //on set la valeur de scanncni de la table demandeur
             Demandeur d = demandeurRepository.findById(id).get();
-//             d.setScannernin(originalFileName);
             d.setScannernin(fileName);
             demandeurRepository.save(d);
         }

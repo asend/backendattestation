@@ -52,6 +52,7 @@ public class AttestationServiceImpl implements AttestationService {
         String civilite = demandeur.getSexe().equalsIgnoreCase("Masculin") ? "Monsieur" : "Madame";
         String naissance = demandeur.getSexe().equalsIgnoreCase("Masculin") ? "né" : "née";
         String inconnue = demandeur.getSexe().equalsIgnoreCase("Masculin") ? "inconnu" : "inconnue";
+
         String code = genCode();
         String attestationName = code + ".pdf";
         String path = Params.DIRECTORYATTESTATION + "/" + attestationName;
@@ -62,7 +63,7 @@ public class AttestationServiceImpl implements AttestationService {
         LocalDateTime dateTime = LocalDateTime.now();
         String formattedDateTime = dateTime.format(formatter);
 
-        String data = "générée le " + formattedDateTime;
+        String data = "Générée le " + formattedDateTime;
 
 
         String numeroAttestation = certificationService.generateAttestationNumber(demandeur.getId());
@@ -74,28 +75,32 @@ public class AttestationServiceImpl implements AttestationService {
         String parath2 = structure.getNomStructure();
         String parath2etoil = "**********";
 
-        String parath3 = "Direction Générale de la Fonction Publique";
+        String parath3 = "La Direction Générale de la Fonction Publique";
 
         String fullName = demandeur.getUtilisateur().getFullName().toUpperCase();
         String date = demandeur.getDatedenaissance();
 
       String auteur = " P. Le Directeur général, po";
       String titreAuteur = "Le chargé d'Etudes";
-      String nomAut = "Abdou karim SANE";
+      String sane = utilisateur.getFullName();
 
 
-        SimpleDateFormat formattage = new SimpleDateFormat("dd-MM-yyyy");
+       // SimpleDateFormat formattage = new SimpleDateFormat("dd-MM-yyyy");
         String parath = "Le Directeur général de la Fonction publique,soussigné, atteste que, " + civilite + "\n" + " " + " " + fullName  + " " + naissance + " " + "le" + " " + " " + date + " " + "á" + " " + demandeur.getLieudenaissance().toUpperCase() + " " +
                 "est" + " " + inconnue + " " + "au Fichier de la Fonction publique." + "\n" + "En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.";
 
 
         String parath4 = "NB: l'attestation délivrée est valable pour une durée de neuf (9) mois.";
 
-        String parath5 = structure.getLocalisation() + " " + "Contact :" + " " + structure.getContact() + " " + "\n" +
-                " " + "BP :" + " " + structure.getBoitePostale() + " " + " " + "Email :" + structure.getEmail();
+       // String phrasefooter = "NB: l'attestation délivrée est valable pour une durée de neuf (9) mois."+ "\n"+
+                                //"attestation délivrée est valable pour une durée de neuf (9) mois.";
+
+        String parath5 = structure.getLocalisation() + " " + "Contact :" + " " + structure.getContact() + "\n" +
+                 "BP :" + " " + structure.getBoitePostale() + " " + "Email :" + structure.getEmail();
 
 
-        String urlDrapeu = Params.DIRECTORYRESOURCE+"/logo-senegal.png";// String.valueOf(ClassLoader.getSystemResource("logo-senegal.png")); //"/Users/7maksacodpc/Downloads/logo-drapeua-du-senegal.png";
+        String urlDrapeu = Params.DIRECTORYRESOURCE+"/logo-senegal.png";
+        // String.valueOf(ClassLoader.getSystemResource("logo-senegal.png")); //"/Users/7maksacodpc/Downloads/logo-drapeua-du-senegal.png";
 
         ImageData drapeau = ImageDataFactory.create(urlDrapeu);
         Image imageDrapeau = new Image(drapeau);
@@ -109,8 +114,8 @@ public class AttestationServiceImpl implements AttestationService {
 
         Image imageLogoMinister = new Image(logoMinistere);
         imageLogoMinister.setRelativePosition(55, -50, 0, 0);
-        imageLogoMinister.setWidth(50);
-        imageLogoMinister.setHeight(50);
+        imageLogoMinister.setWidth(40);
+        imageLogoMinister.setHeight(40);
 
 
         String urlcachet = Params.DIRECTORYSIGNATURE+"/"+utilisateur.getSignature();
@@ -118,16 +123,16 @@ public class AttestationServiceImpl implements AttestationService {
         ImageData cachet = ImageDataFactory.create(urlcachet);
         Image imageCachet = new Image(cachet);
         imageCachet.setWidth(130);
-        imageCachet.setHeight(140);
-        imageCachet.setRelativePosition(340, -10, 0, 0);
+        imageCachet.setHeight(130);
+        imageCachet.setRelativePosition(360, -80, 0, 0);
 
 
         Paragraph aut = new Paragraph(auteur);
-        aut.setRelativePosition(340, 110, 0, 0).setBold();
+        aut.setRelativePosition(350, -65, 0, 0).setBold().setFontSize(11);
         Paragraph titreAut = new Paragraph(titreAuteur);
-        titreAut.setRelativePosition(360, 100, 0, 0);
-        Paragraph NOM = new Paragraph(nomAut);
-        NOM.setRelativePosition(340, 0, 0, 0);
+        titreAut.setRelativePosition(380, -74, 0, 0).setFontSize(10);
+        Paragraph SANE = new Paragraph(sane);
+        SANE.setRelativePosition(375, -80, 0, 0);
 
         demande.setUrlattestation(attestationName);
         demande.setAttestationName(code);
@@ -140,7 +145,7 @@ public class AttestationServiceImpl implements AttestationService {
 
         ImageData qR = ImageDataFactory.create(Params.DIRECTORYQRCOD+"/"+imFile);
         Image imageQR = new Image(qR);
-        imageQR.setRelativePosition(0, 50, 0, 0);
+        imageQR.setRelativePosition(0, 80, 0, 0);
 
         LocalDate databefore = LocalDate.now();
         LocalDate dateAfter = databefore.plusMonths(9);
@@ -151,45 +156,42 @@ public class AttestationServiceImpl implements AttestationService {
         demande.setCertification(certification);
         demande.setDatetraitement(LocalDateTime.now());
 
-
-
-
         //String urlDrapeaulineaire = "/Users/7maksacodpc/Downloads/logo-drapeua-du-senegal.png";
 
         ImageData drapeauLineaire = ImageDataFactory.create(urlDrapeu);
         Image imageDrapeauLineaire = new Image(drapeauLineaire);
         imageDrapeauLineaire.setWidth(500);
         imageDrapeauLineaire.setHeight(2);
-        imageDrapeauLineaire.setRelativePosition(0, 16, 0, 0);
+        imageDrapeauLineaire.setRelativePosition(0, 15, 0, 0);
 
         Paragraph paraDate = new Paragraph(data);
-        paraDate.setRelativePosition(300, -90, 0, 0);
+        paraDate.setRelativePosition(320, -130, 0, 0);
         Paragraph paraNumeroAttestation = new Paragraph(numeroAttestation);
-        paraNumeroAttestation.setFontSize(10);
+        paraNumeroAttestation.setFontSize(9);
         paraNumeroAttestation.setRelativePosition(345, -70, 0, 0);
 
-        Paragraph para1 = new Paragraph(parath1).setFontSize(12);
-        Paragraph para11 = new Paragraph(para1th).setFontSize(12);
+        Paragraph para1 = new Paragraph(parath1).setFontSize(11);
+        Paragraph para11 = new Paragraph(para1th).setFontSize(11);
         para11.setRelativePosition(25, -10, 0, 0).setFontSize(8);
         Paragraph para1etoil = new Paragraph(parth1etoil);
-        para1etoil.setRelativePosition(45, -20, 0, 0);
+        para1etoil.setRelativePosition(45, -17, 0, 0);
 
-        Paragraph para2 = new Paragraph(parath2).setFontSize(12).setRelativePosition(0, -48, 0, 0);
-        Paragraph para2etoil = new Paragraph(parath2etoil).setFontSize(12);
-        para2etoil.setRelativePosition(65, -45, 0, 0);
+        Paragraph para2 = new Paragraph(parath2).setFontSize(11).setRelativePosition(0, -50, 0, 0);
+        Paragraph para2etoil = new Paragraph(parath2etoil).setFontSize(11);
+        para2etoil.setRelativePosition(60, -60, 0, 0);
 
-        Paragraph para3 = new Paragraph(parath3).setFontSize(13).setItalic();
-        para3.setRelativePosition(0, -20, 0, 0);
+        Paragraph para3 = new Paragraph(parath3).setFontSize(12).setItalic();
+        para3.setRelativePosition(130, -70, 0, 0);
 
         Paragraph title = new Paragraph(titre).setFontSize(20).setBold().setBackgroundColor(Color.LIGHT_GRAY).setTextAlignment(TextAlignment.CENTER);
-        title.setRelativePosition(0, 15, 0, 0);
+        title.setRelativePosition(0, -40, 0, 0);
         title.setBorder(new SolidBorder(1));
 
         Paragraph para = new Paragraph(parath).setFontSize(11);
-        para.setRelativePosition(0, 50, 12, 0);
+        para.setRelativePosition(0, -30, 0, 0);
 
         Paragraph para4nb = new Paragraph(parath4).setFontSize(10);
-        para4nb.setRelativePosition(80, 5, 0, 0);
+        para4nb.setRelativePosition(0, -25, 0, 0);
 
         Paragraph para5footer = new Paragraph(parath5).setFontSize(8);
         para5footer.setRelativePosition(80, 20, 0, 0);
@@ -220,14 +222,13 @@ public class AttestationServiceImpl implements AttestationService {
         document.add(title);
 
         document.add(para);
-//        document.add(fullname);
-//        document.add(theDate);
 
+        document.add(imageQR);
 
         document.add(aut);
         document.add(titreAut);
-        document.add(imageQR);
         document.add(imageCachet);
+        document.add(SANE);
 
         document.add(para4nb);
 

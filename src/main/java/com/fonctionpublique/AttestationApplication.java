@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public class AttestationApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
+
         SpringApplication.run(AttestationApplication.class, args);
     }
 

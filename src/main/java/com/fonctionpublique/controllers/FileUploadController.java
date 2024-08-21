@@ -56,19 +56,52 @@ public class FileUploadController {
     }
 
 
-    @RequestMapping(value = "/loadfromFS/{id}" , method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getImageFS(@PathVariable("id") Integer id) throws IOException {
-        DemandeurDTO demandeur = demandeurService.getById(id);
+//    @RequestMapping(value = "/loadfromFS/{id}" , method = RequestMethod.GET)
+//    public ResponseEntity<byte[]> getImageFS(@PathVariable("id") Integer id) throws IOException {
+//        DemandeurDTO demandeur = demandeurService.getById(id);
+//
+//        if(demandeur.getScannernin().contains(".pdf")){
+//            return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(Files.readAllBytes(get(Params.DIRECTORYCNI+"/"+demandeur.getScannernin())));
+//        }else{
+//            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(Files.readAllBytes(get(Params.DIRECTORYCNI+"/"+demandeur.getScannernin())));
+//        }
+//
+//        //return  ;
+//    }
 
-        if(demandeur.getScannernin().contains(".pdf")){
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(Files.readAllBytes(get(Params.DIRECTORYCNI+"/"+demandeur.getScannernin())));
-        }else{
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(Files.readAllBytes(get(Params.DIRECTORYCNI+"/"+demandeur.getScannernin())));
-        }
+//    ################
+@RequestMapping(value = "/loadfromFS/{id}", method = RequestMethod.GET)
+public ResponseEntity<byte[]> getImageFS(@PathVariable("id") Integer id) throws IOException {
+    DemandeurDTO demandeur = demandeurService.getById(id);
+    String filePath = Params.DIRECTORYCNI + "/" + demandeur.getScannernin();
+    String fileExtension = demandeur.getScannernin().substring(demandeur.getScannernin().lastIndexOf(".") + 1).toLowerCase();
 
-        //return  ;
+    MediaType mediaType;
+    switch (fileExtension) {
+        case "pdf":
+            mediaType = MediaType.APPLICATION_PDF;
+            break;
+        case "png":
+            mediaType = MediaType.IMAGE_PNG;
+            break;
+        case "jpeg":
+        case "jpg":
+            mediaType = MediaType.IMAGE_JPEG;
+            break;
+        default:
+            mediaType = MediaType.APPLICATION_OCTET_STREAM; // default for unknown types
+            break;
     }
 
+    byte[] fileContent = Files.readAllBytes(get(filePath));
+
+    return ResponseEntity.ok()
+            .contentType(mediaType)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + demandeur.getScannernin() + "\"")
+            .body(fileContent);
+}
+
+    //####################
     @RequestMapping(value = "/loadAttestation/{id}" , method = RequestMethod.GET)
     public ResponseEntity<byte[]> loadAttestation(@PathVariable("id") Integer id) throws IOException {
         DemandeDTO demande = demandeService.getById(id);

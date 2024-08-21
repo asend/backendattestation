@@ -163,6 +163,8 @@ public class DemandeServiceImpl implements DemandeService {
         return demandeRepository.findByStatut(status).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+
+
     /**
      * get demande by Id demandeur
      *
@@ -188,12 +190,12 @@ public class DemandeServiceImpl implements DemandeService {
                 list.put("DEC", ldec);
             }
             if (d.getStatut().equals("rejetee")){
-                ldec.add(d);
-                list.put("DR", ldec);
+                ldr.add(d);
+                list.put("DR", ldr);
             }
             if (d.getStatut().equals("approuvee")){
-                ldec.add(d);
-                list.put("DA", ldec);
+                lda.add(d);
+                list.put("DA", lda);
             }
 
         }
