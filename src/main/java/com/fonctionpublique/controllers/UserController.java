@@ -28,7 +28,6 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
-
     @PostMapping("/{id}")
     public Integer createNewUser(@PathVariable("id") int id, @RequestPart("file") MultipartFile file) throws IOException {
         Demandeur demandeur= demandeurRepository.findById(id).orElse(null); //User.builder().userName(name).displayPicture(file.getBytes()).build();
@@ -49,18 +48,13 @@ public ResponseEntity<User> createNewUser(@RequestPart("file") MultipartFile fil
     public  ResponseEntity<List<User>> getAllUser(){
         List<User> userList = userRepository.findAll();
         return  ResponseEntity.ok(userList);
-
     }
-
-
 
     @GetMapping("/{id}")
     public byte[] findById(@PathVariable int id){
         Optional<User> userList = userRepository.findById(id);
         return userList.get().getDisplayPicture();
-
     }
-
 
     @GetMapping("/send-test")
     public String sendMailTest(){

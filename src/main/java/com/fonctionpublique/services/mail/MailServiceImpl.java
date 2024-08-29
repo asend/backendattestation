@@ -22,37 +22,10 @@ import java.util.Map;
 public class MailServiceImpl implements MailService {
     @Autowired
     JavaMailSender mailSender;
-
     @Autowired
     DemandeService demandeService;
-
     @Autowired
     ThymeleafService thymeleafService;
-    /*@Override
-    public void sendMailTest() {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-
-            MimeMessageHelper helper = new MimeMessageHelper(
-                    message,
-                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                    StandardCharsets.UTF_8.name());
-            Map<String, Object> variables = new HashMap<>();
-            variables.put("name", "aliou ndiaye");
-            variables.put("message", "message");
-
-            helper.setFrom("alyndiaye.ag@gmail.com");
-            helper.setText(thymeleafService.createContent("mail-sender-test.html", variables), true);
-            helper.setCc("alyndiaye.ag@gmail.com");
-            helper.setTo("alyndiaye.ag@gmail.com");
-            helper.setSubject("attestation");//198800+37450+230000   //674100   //1140350 //750000
-
-            mailSender.send(message);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }*/
-
     @Override
     public void sendMailRejectInterne(Integer id) {
         DemandeDTO demandeDTO = demandeService.getById(id);
@@ -68,7 +41,6 @@ public class MailServiceImpl implements MailService {
 
             helper.setFrom(Params.EMAILSENDER);
             helper.setText(thymeleafService.createContent("mail-reject-interne.html", variables), true);
-            //helper.setCc("alyndiaye.ag@gmail.com");
             helper.setTo(demandeDTO.getDemandeurDTO().getEmail());
             helper.setSubject("attestation");
             demandeDTO.setStatut(StatusDemande.DEMANDE_REFUSEE.getStatut());
@@ -94,7 +66,6 @@ public class MailServiceImpl implements MailService {
 
             helper.setFrom(Params.EMAILSENDER);
             helper.setText(thymeleafService.createContent("mail-reject-externe.html", variables), true);
-            //helper.setCc("alyndiaye.ag@gmail.com");
             helper.setTo(demandeDTO.getDemandeurDTO().getEmail());
             helper.setSubject("attestation");
             demandeDTO.setStatut(StatusDemande.DEMANDE_REFUSEE.getStatut());
@@ -117,10 +88,8 @@ public class MailServiceImpl implements MailService {
                     StandardCharsets.UTF_8.name());
             Map<String, Object> variables = new HashMap<>();
             variables.put("name", demandeDTO.getDemandeurDTO().getFullName());
-
             helper.setFrom(Params.EMAILSENDER);
             helper.setText(thymeleafService.createContent("mail-approuve.html", variables), true);
-            //helper.setCc("alyndiaye.ag@gmail.com");
             helper.setTo(demandeDTO.getDemandeurDTO().getEmail());
             helper.setSubject("attestation");
             File file = new File(Params.DIRECTORYATTESTATION +"/" + demandeDTO.getUrlattestation());
@@ -133,7 +102,6 @@ public class MailServiceImpl implements MailService {
                 System.out.println("File not found: " + file.getAbsolutePath());
                 throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }

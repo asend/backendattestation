@@ -21,7 +21,7 @@ public class StructureServiceImpl  implements  StructureService{
             structure.setAbreviationNomStructure("MFPRSP");
             structure.setReference("/DGFP/CE");
             structure.setNatureAttestation("_SN_DNAFP_");
-            structure.setEmail("fonctionpublique@fonctionpublique.gouv.sn");
+            structure.setEmail("fpublique2024@gmail.com");
             structure.setContact("33 839 66 04 / 33 869 66 00 ");
             structure.setBoitePostale("BP:4007 Buiding Administratif");
             structure.setLocalisation("Dakar Plateau-52 rue Vincens x Abdou Karim BOURGI");

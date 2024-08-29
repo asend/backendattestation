@@ -21,10 +21,7 @@ public class Demandeur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-//    @Pattern(regexp = "\\d{9}", message = "Maximum 9 chiffres")
     private String telephone;
-//    @JsonFormat(pattern="dd-MM-yyyy")
-//    @PastOrPresent
     private String datedenaissance;
     private String lieudenaissance;
     private String adresse;

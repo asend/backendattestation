@@ -8,6 +8,7 @@ import com.fonctionpublique.enumpackage.TypeDemande;
 import com.fonctionpublique.repository.DemandeRepository;
 import com.fonctionpublique.repository.DemandeurRepository;
 import com.fonctionpublique.services.demandeur.DemandeurServiceImpl;
+import com.fonctionpublique.validators.ObjectValidator;
 import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class DemandeServiceImpl implements DemandeService {
     private final DemandeurRepository demandeurRepository;
     private final DemandeRepository demandeRepository;
     private final DemandeurServiceImpl demandeurService;
+    private final ObjectValidator<DemandeDTO> validator;
+
 
     /**
      * List all demandes
@@ -83,6 +86,7 @@ public class DemandeServiceImpl implements DemandeService {
      */
     @Override
     public Integer creerDemande(int id) {
+
         Optional<Demandeur> demandeur = demandeurRepository.findById(id);
         if (!demandeur.isPresent()) {
             throw new EntityNotFoundException("NOT_FOUND");
@@ -197,7 +201,6 @@ public class DemandeServiceImpl implements DemandeService {
                 lda.add(d);
                 list.put("DA", lda);
             }
-
         }
         return list;
     }
@@ -228,7 +231,6 @@ public class DemandeServiceImpl implements DemandeService {
         list.put("approuvee", approuvees.get());
         list.put("rejetee", rejetees.get());
         list.put("total", demandeDTOS.size());
-
         return list;
     }
 

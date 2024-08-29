@@ -8,14 +8,14 @@ public interface Params {
     public static final int EXP_DATE = 1000 * 60 * 24;
     //les attestations gnenerees
 
-    /*public static final String DIRECTORYATTESTATION = "/home/adminadie/Desktop/attestation";
-    public static final String DIRECTORYCNI = "/home/adminadie/Desktop/cni";
-    public static final String DIRECTORYQRCOD = "/home/adminadie/Desktop/qrcode";
-    public static final String DIRECTORYSIGNATURE = "/home/adminadie/Desktop/signature";
-    public static final String DIRECTORYRESOURCE = "/home/adminadie/Desktop/resource";
-    public static final String LIENDEVERIFICATION = "fpublique-demarche.sec.gouv.sn/#/verifierscan/";
-    public static final String LIENRESTPASSWORD = "fpublique-demarche.sec.gouv.sn//#/new-password/";
-    public static final String EMAILSENDER = "fpublique2024@gmail.com";*/
+//    public static final String DIRECTORYATTESTATION = "/home/adminadie/Desktop/attestation";
+//    public static final String DIRECTORYCNI = "/home/adminadie/Desktop/cni";
+//    public static final String DIRECTORYQRCOD = "/home/adminadie/Desktop/qrcode";
+//    public static final String DIRECTORYSIGNATURE = "/home/adminadie/Desktop/signature";
+//    public static final String DIRECTORYRESOURCE = "/home/adminadie/Desktop/resource";
+//    public static final String LIENDEVERIFICATION = "fpublique-demarche.sec.gouv.sn/#/verifierscan/";
+//    public static final String LIENRESTPASSWORD = "fpublique-demarche.sec.gouv.sn//#/new-password/";
+//    public static final String EMAILSENDER = "fpublique2024@gmail.com";
 
 
     /*public static final String DIRECTORYATTESTATION = "/home/ubuntu/Desktop/attestation";
