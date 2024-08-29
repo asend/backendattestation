@@ -30,17 +30,13 @@ public class RegistrationRequest {
     @NotNull(message = "password ne doit pas etre null")
     @NotEmpty(message = "password ne doit pas etre null")
     @NotBlank(message = "password ne doit pas etre vide")
-    //@Min(value = 6, message = "minimun 6 caracteres")
     private String password;
     private String status;
-    //@Max(value = 14, message = "maximum 14 caracters")
-    //@Min(value = 13, message = "minimun 13 caracteres")
     @NotNull(message = "nin ne doit pas etre null")
     @NotEmpty(message = "nin ne doit pas etre null")
     @NotBlank(message = "nin ne doit pas etre vide")
     private String nin;
     private String passePort;
-//    private  boolean isEnable = false;
 
     public  String fullName(){
         return prenom + " " + nom;
