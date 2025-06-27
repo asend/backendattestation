@@ -1,7 +1,9 @@
 package com.fonctionpublique.handlers;
 
 import com.fonctionpublique.exception.*;
+import com.fonctionpublique.handleException.DemandeurNotExist;
 import com.fonctionpublique.handleException.EmailAlreadyExistException;
+import com.fonctionpublique.handleException.ImagaNotFound;
 import com.fonctionpublique.handleException.NinAlreadyExistException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -170,6 +172,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionRepresentation> handleInvaliExtensionException() {
         ExceptionRepresentation representation = ExceptionRepresentation.builder()
                 .errorMessage("INVALID_EXTENTION")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(representation);
+    }
+
+
+    @ExceptionHandler(DemandeurNotExist.class)
+    public ResponseEntity<ExceptionRepresentation> demandeurNotExist() {
+        ExceptionRepresentation representation = ExceptionRepresentation.builder()
+                .errorMessage("MISSING_DEMANDEUR")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(representation);
+    }
+
+    @ExceptionHandler(ImagaNotFound.class)
+    public ResponseEntity<ExceptionRepresentation> ImageNotFound() {
+        ExceptionRepresentation representation = ExceptionRepresentation.builder()
+                .errorMessage("IMAGE_NOT_FOUND")
                 .build();
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)

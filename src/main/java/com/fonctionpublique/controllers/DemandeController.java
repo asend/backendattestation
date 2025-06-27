@@ -1,11 +1,14 @@
 package com.fonctionpublique.controllers;
 
 import com.fonctionpublique.dto.DemandeDTO;
+import com.fonctionpublique.dto.DemandeurDTO;
 import com.fonctionpublique.entities.Demande;
 import com.fonctionpublique.services.demande.DemandeServiceImpl;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +38,7 @@ public class DemandeController {
      */
     @PostMapping("/demandez/{id}")
     public Integer demander(@PathVariable("id") int id) {
+
         return demandeServiceImpl.creerDemande(id);
     }
 
@@ -49,7 +53,6 @@ public class DemandeController {
         return ResponseEntity.ok(demandeServiceImpl.getById(id));
 
     }
-
 
 
     /**
@@ -118,7 +121,7 @@ public class DemandeController {
         //LocalDate currentDate = LocalDate.parse(new Date(LocalDate.now()), formatter);
         demandeServiceImpl.demandeByDemandeurStatut(id).forEach(d->{
             //LocalDate expiredDate = LocalDate.parse(d.getDateexpiration(), formatter);
-            if(d.getStatut().equals("cours") || (d.getStatut().equals("approuvee"))){
+            if(d.getStatut().equals("cours") || (d.getStatut().equals("approuvée"))){
                 result[0] = false;
             }
         });
@@ -148,8 +151,10 @@ public class DemandeController {
     }
 
 
-
-
+    @PutMapping("/update/{id}")
+    public Integer updateMotifRejet(@PathVariable Integer id, @RequestBody DemandeDTO demandeDTO) {
+        return demandeServiceImpl.updateMotifRejetDemande(id, demandeDTO);
+    }
 
 
 

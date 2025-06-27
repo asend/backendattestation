@@ -17,7 +17,6 @@ public class ScannerFile {
     private String type;
     @Lob
     @Column(name = "data", columnDefinition="LONGTEXT")
-//    @Column( length = 100000 )
     private byte[] data;
 
     public ScannerFile(String name, String type, byte[] data) {

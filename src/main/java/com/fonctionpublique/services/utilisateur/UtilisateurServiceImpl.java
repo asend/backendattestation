@@ -13,8 +13,10 @@ import com.fonctionpublique.handleException.NinAlreadyExistException;
 import com.fonctionpublique.repository.PasswordResetTokenRepository;
 import com.fonctionpublique.repository.ProfileRepository;
 import com.fonctionpublique.repository.UtilisateurRepository;
+import com.fonctionpublique.services.profile.ProfileServiceImpl;
 import com.fonctionpublique.validators.ObjectValidator;
 import com.google.zxing.WriterException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +40,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     private final AuthenticationManager authenticationManager;
     private final ObjectValidator<RegistrationRequest> validator;
     private final PasswordResetTokenRepository resetTokenRepository;
+    private final ProfileServiceImpl profileService;
 
     /**
      * find utilisateur by id
@@ -49,10 +52,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public UtilisateurDTO getById(int id) {
         return convertDTO(utilisateurRepository.findById(id).orElse(null));
     }
+
+
+public Optional<Integer> findById(int id) {
+    return utilisateurRepository.findById(id)
+            .map(utilisateur -> utilisateur.getId()); // Return the ID of the user as an Optional<Integer>
+}
+
     @Override
     public UtilisateurDTO getByNin(String nin) {
-        return  convertToDTO(utilisateurRepository.findByNin(nin).orElse(null));
+        return  convertDTO(utilisateurRepository.findByNin(nin).orElse(null));
     }
+
 
     /**
      * Convert entity to dto
@@ -60,17 +71,19 @@ public class UtilisateurServiceImpl implements UtilisateurService {
      * @param utilisateur
      * @return
      */
-    private UtilisateurDTO convertToDTO(Utilisateur utilisateur) {
-
-        UtilisateurDTO utilisateurDTO = new UtilisateurDTO();
-        utilisateurDTO.setId(utilisateur.getId());
-        utilisateurDTO.setPrenom(utilisateur.getPrenom());
-        utilisateurDTO.setNom(utilisateur.getNom());
-        utilisateurDTO.setEmail(utilisateur.getEmail());
-        utilisateurDTO.setNin(utilisateur.getNin());
-        utilisateurDTO.setPassPort(utilisateur.getPassPort());
-        return utilisateurDTO;
-    }
+//    private UtilisateurDTO convertToDTO(Utilisateur utilisateur) {
+//
+//        UtilisateurDTO utilisateurDTO = new UtilisateurDTO();
+//        utilisateurDTO.setId(utilisateur.getId());
+//        utilisateurDTO.setPrenom(utilisateur.getPrenom());
+//        utilisateurDTO.setNom(utilisateur.getNom());
+//        utilisateurDTO.setEmail(utilisateur.getEmail());
+//        utilisateurDTO.setNin(utilisateur.getNin());
+//        utilisateurDTO.setTitre(utilisateurDTO.getTitre());
+//        utilisateurDTO.setPassPort(utilisateur.getPassPort());
+//        utilisateurDTO.setSignature(utilisateur.getSignature());
+//        return utilisateurDTO;
+//    }
 
     /**
      * Convert dto to entity
@@ -107,10 +120,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 .nin(utilisateur.getNin())
                 .statut(utilisateur.isStatut())
                 .fullName(utilisateur.getFullName())
-//                .demandeurDTO(demandeurService.convertToDTO(utilisateur.getDemandeur()))
                 .signature(utilisateur.getSignature())
                 .passPort(utilisateur.getPassPort())
                 .typePieces(utilisateur.getTypePieces())
+                .titre(utilisateur.getTitre())
+                .signature(utilisateur.getSignature())
+                .telephone(utilisateur.getTelephone())
+                .profileDTO(profileService.convertDTO(utilisateur.getProfile()))
                 .build();
     }
 
@@ -125,6 +141,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public List<UtilisateurDTO> findAll() throws IOException, WriterException {
         return utilisateurRepository.findAll().stream().map(this::convertDTO).collect(Collectors.toList());
     }
+
+
 
     /**
      * find profil by profileName if exist else create it
@@ -144,6 +162,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         }
         return profile;
     }
+
 
     /**
      * register user
@@ -169,6 +188,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Utilisateur utilisateur = RegistrationRequest.convertToEntity(registrationRequest);
         utilisateur.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
         utilisateur.setStatut(true);
+        utilisateur.setMatriculeSolde(null);
         utilisateur.setProfile(findOrCreateProfile("user"));
         utilisateurRepository.save(utilisateur);
         Map<String, Object> claims = new HashMap<>();
@@ -183,6 +203,16 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 .token(token)
                 .build();
     }
+
+
+    /**
+     * register a new administrator
+     * @param registrationRequest
+     * @return
+     * @throws IOException
+     * @throws WriterException
+     */
+
 
     /**
      * Authentication
@@ -204,11 +234,24 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         claims.put("profile", user.getProfile().getCode());
         String token = utilisateurUtil.generateToken(user, claims);
 
+        if(token != null){
+            Optional<Profile> profileOpt = profileRepository.findByCode("traitant");
+            if("traitant".equalsIgnoreCase(user.getProfile().getCode())){
+                String fullName = user.getPrenom() + " " + user.getNom();
+                String email = user.getEmail();
+
+                String message = "Un traitant vient de se connecter !\nNom: " + fullName + "\nEmail: " + email;
+
+
+
+                // Envoi du message WhatsApp
+//                Constantes.sendNotificationWhatsapp(message, "782441635");
+            }
+        }
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
-
-
     }
 
     /**
@@ -291,9 +334,128 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         }
         utilisateur.setPassword(passwordEncoder.encode(newPassword));
         return utilisateurRepository.save(utilisateur).getId();
-
-
     }
+
+    @Override
+    public List<UtilisateurDTO> getByCode(String code) {
+        Profile profile = profileService.getByCodes(code);
+        List<Utilisateur> utilisateurs = profile.getUtilisateur();
+        if (utilisateurs.isEmpty()) {
+            throw new IllegalArgumentException("Aucun utilisateur trouvé pour le code de profil : " + code);
+        }
+        return utilisateurs.stream()
+                .map(this::convertDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer updateTraitant(int utilisateurId, UtilisateurDTO utilisateurDTO) {
+
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur not found with ID: " + utilisateurId));
+
+        utilisateur.setNom(utilisateurDTO.getNom());
+        utilisateur.setPrenom(utilisateurDTO.getPrenom());
+        utilisateur.setEmail(utilisateurDTO.getEmail());
+        utilisateur.setTitre(utilisateurDTO.getTitre());
+        utilisateur.setNin(utilisateurDTO.getNin());
+        utilisateur.setTelephone(utilisateurDTO.getTelephone());
+        utilisateur.setSignature(utilisateurDTO.getSignature());
+        utilisateur = utilisateurRepository.save(utilisateur);
+        return utilisateurRepository.save(utilisateur).getId();
+    }
+
+
+
+    @Override
+    public Profile CreateProfileTraitant(String profileTraitant) {
+        Profile profile = profileRepository.findByCode(profileTraitant).orElse(null);
+        if (profile == null) {
+            return profileRepository.save(
+                    Profile.builder()
+                            .libelle("role de traitant")
+                            .code(profileTraitant)
+                            .etat("true")
+                            .build());
+        }
+        return profile;
+    }
+
+    @Override
+    public int registerTraitant(RegistrationRequest registrationRequest){
+        validator.validate(registrationRequest);
+        if (utilisateurRepository.existsByEmail(registrationRequest.getEmail()) && utilisateurRepository.existsByNin(registrationRequest.getNin())) {
+            throw new EmailAndNinAlreadyExistException("EMAIL_NIN_EXIST");
+        }
+        if (utilisateurRepository.existsByEmail(registrationRequest.getEmail())) {
+            throw new EmailAlreadyExistException("email exist");
+        }
+        if (utilisateurRepository.existsByNin(registrationRequest.getNin())) {
+            throw new NinAlreadyExistException("nin exist");
+        }
+
+        Utilisateur utilisateur = RegistrationRequest.convertToEntity(registrationRequest);
+        utilisateur.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        utilisateur.setStatut(true);
+        utilisateur.setProfile(CreateProfileTraitant("traitant"));
+        utilisateurRepository.save(utilisateur);
+        return utilisateur.getId();
+    }
+
+
+    public void deleteTraitant(int traitantId) {
+        Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findById(traitantId);
+        if (utilisateurOpt.isEmpty()) {
+            throw new EntityNotFoundException("Traitant with ID " + traitantId + " does not exist");
+        }
+
+        Utilisateur utilisateur = utilisateurOpt.get();
+
+        if (!"traitant".equalsIgnoreCase(utilisateur.getProfile().getCode())) {
+            throw new IllegalArgumentException("Only users with the 'traitant' profile can be deleted");
+        }
+        utilisateurRepository.delete(utilisateur);
+    }
+
+
+
+    @Override
+    public Profile CreateProfileVisionnage(String profileTraitant) {
+        Profile profile = profileRepository.findByCode(profileTraitant).orElse(null);
+        if (profile == null) {
+            return profileRepository.save(
+                    Profile.builder()
+                            .libelle("role de visionnaire")
+                            .code(profileTraitant)
+                            .etat("true")
+                            .build());
+        }
+        return profile;
+    }
+
+
+    @Override
+    public int registerVisionnage(RegistrationRequest registrationRequest){
+        validator.validate(registrationRequest);
+        if (utilisateurRepository.existsByEmail(registrationRequest.getEmail()) && utilisateurRepository.existsByNin(registrationRequest.getNin())) {
+            throw new EmailAndNinAlreadyExistException("EMAIL_NIN_EXIST");
+        }
+        if (utilisateurRepository.existsByEmail(registrationRequest.getEmail())) {
+            throw new EmailAlreadyExistException("email exist");
+        }
+        if (utilisateurRepository.existsByNin(registrationRequest.getNin())) {
+            throw new NinAlreadyExistException("nin exist");
+        }
+
+        Utilisateur utilisateur = RegistrationRequest.convertToEntity(registrationRequest);
+        utilisateur.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        utilisateur.setStatut(true);
+        utilisateur.setProfile(CreateProfileVisionnage("visionnage"));
+        utilisateurRepository.save(utilisateur);
+        return utilisateur.getId();
+    }
+
+
 
 
 }

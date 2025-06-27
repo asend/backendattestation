@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @SuperBuilder
+@Builder
 public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +21,6 @@ public class Profile {
     private String code;
     private String etat;
     private String libelle;
-
     @OneToMany(mappedBy = "profile")
     private List<Utilisateur> utilisateur;
 

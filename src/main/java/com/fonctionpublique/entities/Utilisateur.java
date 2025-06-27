@@ -34,15 +34,14 @@ public class Utilisateur implements UserDetails {
     private String email;
     private String password;
     private String typePieces;
-//    @Column(unique = true)
-//    @Max(value = 14 , message = "ce champs doit avoir maximun 14 chiffres")
-//    @Min(value = 13, message = "ce champs doit avoir au minumum 13 chiffres")
-//    @NonNull
-//    @NotBlank
     private String nin;
+    private String telephone;
     private String passPort;
     private boolean statut;
     private String signature;
+    private String titre;
+    private String matriculeSolde;
+
     @OneToOne
     private Demandeur demandeur;
     @OneToMany(mappedBy = "utilisateur")
@@ -52,11 +51,9 @@ public class Utilisateur implements UserDetails {
     private Profile profile;
     @OneToMany(mappedBy = "utilisateur")
     private List<PasswordResetToken> passwordResetTokens;
-
     public String getFullName() {
         return prenom + " " + nom;
     }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(profile.getCode()));

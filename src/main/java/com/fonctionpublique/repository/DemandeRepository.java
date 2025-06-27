@@ -5,6 +5,7 @@ import com.fonctionpublique.entities.Demande;
 import com.fonctionpublique.entities.Demandeur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -35,4 +36,8 @@ public interface DemandeRepository extends JpaRepository<Demande, Integer> {
     List<Demande> demandeActif();
 
     Demande findByAttestationName(String code);
+
+@Query("SELECT d FROM Demande d WHERE d.utilisateur.signature = :signature AND d.statut = :statut")
+List<Demande> findBySignatureAndStatut(@Param("signature") String signature, @Param("statut") String statut);
+
 }

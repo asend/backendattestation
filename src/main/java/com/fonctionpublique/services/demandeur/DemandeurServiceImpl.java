@@ -2,18 +2,16 @@ package com.fonctionpublique.services.demandeur;
 
 import com.fonctionpublique.dto.DemandeurDTO;
 import com.fonctionpublique.entities.Demandeur;
+import com.fonctionpublique.entities.FileUpload;
 import com.fonctionpublique.entities.Utilisateur;
 import com.fonctionpublique.enumpackage.StatusDemande;
 import com.fonctionpublique.repository.DemandeurRepository;
+import com.fonctionpublique.repository.FileUploadRepositoy;
 import com.fonctionpublique.repository.UtilisateurRepository;
-import com.fonctionpublique.services.demande.DemandeServiceImpl;
-import com.fonctionpublique.services.utilisateur.UtilisateurServiceImpl;
 import com.fonctionpublique.validators.ObjectValidator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +25,7 @@ public class DemandeurServiceImpl implements DemandeurService {
     private final DemandeurRepository demandeurRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final ObjectValidator<DemandeurDTO> validator;
+    private final FileUploadRepositoy fileUploadRepositoy;
 
 
     @Override
@@ -40,6 +39,7 @@ public class DemandeurServiceImpl implements DemandeurService {
         Demandeur demandeur = convertToEntity(demandeurDTO);
         demandeur.setStatut(StatusDemande.DEMANDE_EN_COURS.getStatut());
         demandeur.setUtilisateur(optionalUtilisateurs.get());
+        demandeur.setMatriculeSolde(null);
         demandeurRepository.save(demandeur);
         optionalUtilisateurs.get().setDemandeur(demandeur);
         utilisateurRepository.save(optionalUtilisateurs.get());
@@ -73,17 +73,22 @@ public class DemandeurServiceImpl implements DemandeurService {
                 .email(demandeur.getUtilisateur().getEmail())
                 .sexe(demandeur.getSexe())
                 .datedenaissance(demandeur.getDatedenaissance())
+//                .datedenaissance(demandeur.getDatedenaissance())
                 .lieudenaissance(demandeur.getLieudenaissance())
                 .fonction(demandeur.getFonction())
                 .nin(demandeur.getNin())
                 .telephone(demandeur.getTelephone())
-                .scannernin(demandeur.getScannernin())
+//                .scannernin(demandeur.getScannernin())
                 .userId(demandeur.getUtilisateur().getId())
                 .statut(demandeur.getStatut())
                 .fullName(demandeur.getUtilisateur().getFullName())
                 .isCompleted(demandeur.isCompleted())
                 .displayPicture(demandeur.getDisplayPicture())
                 .type(demandeur.getType())
+                .fieluploads(demandeur.getFileUploads())
+                .region(demandeur.getRegion())
+                .departement(demandeur.getDepartement())
+                .matriculeSolde(demandeur.getMatriculeSolde())
                 .build();
 
     }
@@ -97,14 +102,18 @@ public class DemandeurServiceImpl implements DemandeurService {
                 .fonction(demandeurDTO.getFonction())
                 .lieudenaissance(demandeurDTO.getLieudenaissance())
                 .statut(demandeurDTO.getStatut())
-                .scannernin(demandeurDTO.getScannernin())
+//                .scannernin(demandeurDTO.getScannernin())
                 .sexe(demandeurDTO.getSexe())
                 .telephone(demandeurDTO.getTelephone())
                 .displayPicture(demandeurDTO.getDisplayPicture())
                 .type(demandeurDTO.getType())
+                .region(demandeurDTO.getRegion())
+                .departement(demandeurDTO.getDepartement())
+                .matriculeSolde(demandeurDTO.getMatriculeSolde())
                 .build();
 
     }
+
 
 
     @Override
@@ -115,8 +124,37 @@ public class DemandeurServiceImpl implements DemandeurService {
         utilisateur.setPrenom(demandeurDTO.getPrenom());
         utilisateur.setNom(demandeurDTO.getNom());
         utilisateur.setNin(demandeurDTO.getNin());
+        utilisateur.setEmail(demandeurDTO.getEmail());
         Demandeur demandeur = convertToEntity(demandeurDTO);
         demandeur.setUtilisateur(utilisateur);
         return demandeurRepository.save(demandeur).getId();
     }
+
+@Override
+public Integer updateMatriculeSoldeDemandeur(Integer id, String matriculeSolde) {
+    Optional<Demandeur> optionalDemandeur = demandeurRepository.findById(id);
+    if (optionalDemandeur.isPresent()) {
+        Demandeur demandeur = optionalDemandeur.get();
+
+        if (matriculeSolde == null || matriculeSolde.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le matriculeSolde ne peut pas être vide");
+        }
+
+        demandeur.setMatriculeSolde(matriculeSolde.trim());
+        demandeurRepository.save(demandeur);
+        return demandeur.getId();
+    }
+    throw new EntityNotFoundException("Demandeur non trouvé avec l'id " + id);
+}
+
+
+
+
+
+
+
+    public FileUpload getImageByIdAndName(Long id, String name) {
+        return fileUploadRepositoy.findByName(id, name).orElse(null);
+    }
+
 }

@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -22,7 +24,8 @@ public class Demandeur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String telephone;
-    private String datedenaissance;
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate datedenaissance;
     private String lieudenaissance;
     private String adresse;
     private String sexe;
@@ -40,6 +43,12 @@ public class Demandeur {
     @Column(length = 1000000)
     private byte[] displayPicture;
     private String type;
+    private String region;
+    private String departement;
+    private String matriculeSolde;
+
+    @OneToMany(mappedBy = "demandeur")
+    private List<FileUpload> fileUploads;
 
     public boolean isCompleted() {
         if (telephone == null || datedenaissance == null || lieudenaissance == null

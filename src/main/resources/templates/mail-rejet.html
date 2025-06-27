@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Template</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            font-size: 16px;
+            width: 70%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .brand {
+            font-size: 1.5em;
+            color: green !important;
+            text-decoration: none;
+            font-weight: 800;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        .footer {
+            color: #aaa;
+            font-size: 0.8em;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <a href="#" class="brand">Attestation de non appartenance à la Fonction publique</a>
+    </div>
+    <h3>Bonjour Monsieur/Madame <span th:text="${name}"></span>,</h3>
+    <p>
+        Nous regrettons de vous informer que votre demande n'a pas été acceptée. <br>
+        Par conséquent, nous ne sommes pas en mesure de vous délivrer une attestation de non-appartenance à la Fonction publique. <br>
+        Pour plus de détails voir le fichier joint.
+    </p>
+
+    <br><br>
+    <div class="footer">
+        <p>Cordialement,</p>
+        <p>Direction Générale de la fonction publique.</p>
+    </div>
+</div>
+</body>
+</html>

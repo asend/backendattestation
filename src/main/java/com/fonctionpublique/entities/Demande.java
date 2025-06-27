@@ -23,6 +23,7 @@ public class Demande {
     private int id;
     private String urlattestation;
     private String statut;
+    private String motifrejet;
     private String numerodemande;
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDateTime datedemande;
@@ -44,6 +45,7 @@ public class Demande {
     @ManyToOne
     @JoinColumn(name = "id_utilisateur")
     private Utilisateur utilisateur;
+    private LocalDateTime tempsEcoule;
 
     public boolean isValide() {
         validite=false;
@@ -68,6 +70,12 @@ public class Demande {
         return this.validite = false;
     }
 
-
+//    public String getMotifRejet() {
+//        return motifrejet;
+//    }
+//
+//    public void setMotifRejet(String motifRejet) {
+//        this.motifrejet = motifRejet;
+//    }
 
 }

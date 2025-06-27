@@ -17,12 +17,13 @@ public class DemandeDTO {
     private int id;
     private String urlattestation;
     private String statut;
+    private String motifrejet;
     private String numerodemande;
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDateTime datedemande;
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDateTime datetraitement;
-    private String attestaionName;
+    private String attestationName;
     private boolean validite;
     private String objetdemande;
     private String descriptiondemande;
@@ -30,5 +31,7 @@ public class DemandeDTO {
     private DemandeurDTO demandeurDTO;
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate dateexpiration;
+    private LocalDateTime tempsEcoule;
+
 
 }

@@ -2,8 +2,6 @@ package com.fonctionpublique.services.demande;
 
 import com.fonctionpublique.dto.DemandeDTO;
 import com.fonctionpublique.entities.Demande;
-import io.jsonwebtoken.lang.Arrays;
-
 import java.util.List;
 import java.util.Map;
 
@@ -30,4 +28,6 @@ public interface DemandeService {
     Demande getByCode(String code);
 
     List<DemandeDTO> demandeActif();
+
+//    Demande setMotifRejet(int demandeId, String motifRejet);
 }

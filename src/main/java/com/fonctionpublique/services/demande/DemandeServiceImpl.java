@@ -1,17 +1,24 @@
 package com.fonctionpublique.services.demande;
 
 import com.fonctionpublique.dto.DemandeDTO;
-import com.fonctionpublique.entities.Demande;
-import com.fonctionpublique.entities.Demandeur;
+import com.fonctionpublique.dto.DemandeurDTO;
+import com.fonctionpublique.entities.*;
+import com.fonctionpublique.enumpackage.Constantes;
 import com.fonctionpublique.enumpackage.StatusDemande;
 import com.fonctionpublique.enumpackage.TypeDemande;
 import com.fonctionpublique.repository.DemandeRepository;
 import com.fonctionpublique.repository.DemandeurRepository;
+import com.fonctionpublique.repository.ProfileRepository;
+import com.fonctionpublique.repository.UtilisateurRepository;
 import com.fonctionpublique.services.demandeur.DemandeurServiceImpl;
+import com.fonctionpublique.services.mail.MailService;
 import com.fonctionpublique.validators.ObjectValidator;
 import com.google.zxing.WriterException;
+import com.itextpdf.text.log.LoggerFactory;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +26,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -32,6 +41,12 @@ public class DemandeServiceImpl implements DemandeService {
     private final DemandeRepository demandeRepository;
     private final DemandeurServiceImpl demandeurService;
     private final ObjectValidator<DemandeDTO> validator;
+    private final  ProfileRepository profileRepository;
+    private final UtilisateurRepository utilisateurRepository;
+
+
+    private final AtomicInteger compteur = new AtomicInteger(0);
+
 
 
     /**
@@ -85,27 +100,103 @@ public class DemandeServiceImpl implements DemandeService {
      * @throws WriterException
      */
     @Override
+    @Transactional
     public Integer creerDemande(int id) {
-
         Optional<Demandeur> demandeur = demandeurRepository.findById(id);
         if (!demandeur.isPresent()) {
             throw new EntityNotFoundException("NOT_FOUND");
         }
+
         Demande demande = new Demande();
         demande.setDemandeur(demandeur.get());
         demande.setStatut(StatusDemande.DEMANDE_EN_COURS.getStatut());
+        if ("cours".equalsIgnoreCase(demande.getStatut()) && demande.getTempsEcoule() == null) {
+            demande.setTempsEcoule(LocalDateTime.now());
+            demandeRepository.save(demande);
+        }
+
+
         demande.setDatedemande(LocalDateTime.now());
         demande.setDatetraitement(LocalDateTime.now());
         demande.setValidite(true);
         demande.setObjetdemande(TypeDemande.DEMANDE_NON_APP.getStatut());
         demande.setDescriptiondemande("Description de la demande");
-        demandeur.get().setDemande(demande.getDemandeur().getDemande());
         demande.setDateexpiration(isExpired());
-        demandeurRepository.save(demandeur.get());
 
 
-        return demandeRepository.save(demande).getId();
+        // Sauvegarde de la demande
+        demandeRepository.save(demande);
+        //demandeurRepository.save(demandeur.get());
+
+        // Incrémentation du compteur
+        int count = compteur.incrementAndGet();
+        System.out.println("Compteur actuel : " + count);
+
+
+        // Réinitialisation du compteur lorsqu'il atteint 5
+        if (count >= 1) {
+            compteur.set(0);
+            System.out.println("Compteur réinitialisé à 0");
+        }
+        // Sending notification if count == 1
+        if (count == 1) {
+            Optional<Profile> profileOpt = profileRepository.findByCode("traitant");
+
+            if (profileOpt.isEmpty()) {
+                System.out.println("Le profil TRAITANT n'existe pas.");
+                //return 0;
+            }
+
+            Profile profilTraitant = profileOpt.get();
+
+        // Récupérer tous les utilisateurs ayant ce profil
+            List<Utilisateur> utilisateursTraitants = utilisateurRepository.findByProfil(profilTraitant);
+
+            if (utilisateursTraitants.isEmpty()) {
+                System.out.println("Aucun utilisateur avec le profil TRAITANT trouvé.");
+                //return 0;
+            }
+
+            // Envoyer les notifications en parallèle
+            utilisateursTraitants.parallelStream().forEach(utilisateur -> {
+                System.out.println("Envoi de notification à : " + utilisateur.getTelephone());
+                Constantes.sendNotificationWhatsapp("Vous avez une nouvelle demande en attente de traitement." + demande.getId() + LocalDateTime.now(), utilisateur.getTelephone());
+            });
+        }
+
+        return demande.getId();
     }
+
+
+
+
+
+
+//    public Integer creerDemande(int id) {
+//
+//        Optional<Demandeur> demandeur = demandeurRepository.findById(id);
+//        if (!demandeur.isPresent()) {
+//            throw new EntityNotFoundException("NOT_FOUND");
+//        }
+//
+//        Demande demande = new Demande();
+//        demande.setDemandeur(demandeur.get());
+//        demande.setStatut(StatusDemande.DEMANDE_EN_COURS.getStatut());
+//        demande.setDatedemande(LocalDateTime.now());
+//        demande.setDatetraitement(LocalDateTime.now());
+//        demande.setValidite(true);
+//        demande.setObjetdemande(TypeDemande.DEMANDE_NON_APP.getStatut());
+//        demande.setDescriptiondemande("Description de la demande");
+//        demandeur.get().setDemande(demande.getDemandeur().getDemande());
+//        demande.setDateexpiration(isExpired());
+//        demandeurRepository.save(demandeur.get());
+//        return demandeRepository.save(demande).getId();
+//    }
+
+
+
+
+
 
     /**
      * Convert entity demande to dto demande
@@ -126,8 +217,9 @@ public class DemandeServiceImpl implements DemandeService {
                 .objetdemande(demande.getObjetdemande())
                 .statut(demande.getStatut())
                 .urlattestation(demande.getUrlattestation())
-                .attestaionName(demande.getAttestationName())
+                .attestationName(demande.getAttestationName())
                 .dateexpiration(demande.getDateexpiration())
+                .motifrejet(demande.getMotifrejet())
                 .build();
     }
 
@@ -148,7 +240,8 @@ public class DemandeServiceImpl implements DemandeService {
                 .objetdemande(demande.getObjetdemande())
                 .statut(demande.getStatut())
                 .urlattestation(demande.getUrlattestation())
-                .attestationName(demande.getAttestaionName())
+                .attestationName(demande.getAttestationName())
+                .motifrejet(demande.getMotifrejet())
                 .demandeur(Demandeur.builder()
                         .id(demande.getDemandeurDTO().getId())
                         .build())
@@ -193,11 +286,11 @@ public class DemandeServiceImpl implements DemandeService {
                 ldec.add(d);
                 list.put("DEC", ldec);
             }
-            if (d.getStatut().equals("rejetee")){
+            if (d.getStatut().equals("rejetée")){
                 ldr.add(d);
                 list.put("DR", ldr);
             }
-            if (d.getStatut().equals("approuvee")){
+            if (d.getStatut().equals("approuvée")){
                 lda.add(d);
                 list.put("DA", lda);
             }
@@ -221,15 +314,15 @@ public class DemandeServiceImpl implements DemandeService {
             if (d.getStatut()=="cours"){
                 encours.getAndSet(encours.get() + 1);
             }
-            if(d.getStatut()=="approuvee"){
+            if(d.getStatut()=="approuvée"){
                 approuvees.getAndSet(approuvees.get() + 1);
-            }if (d.getStatut()=="rejetee"){
+            }if (d.getStatut()=="rejetée"){
                 rejetees.getAndSet(rejetees.get() + 1);
             }
         });
         list.put("cours",encours.get());
-        list.put("approuvee", approuvees.get());
-        list.put("rejetee", rejetees.get());
+        list.put("approuvée", approuvees.get());
+        list.put("rejetée", rejetees.get());
         list.put("total", demandeDTOS.size());
         return list;
     }
@@ -252,7 +345,24 @@ public class DemandeServiceImpl implements DemandeService {
     public DemandeDTO annuler(Integer id){
         Demande demandeDTO = demandeRepository.findById(id).orElse(null);
         demandeDTO.setStatut(StatusDemande.DEMANDE_SUPPRIME.getStatut());
+        System.out.println("########################### ici ici demandeDTO "+demandeDTO.getId());
+        System.out.println("########################### ici ici "+StatusDemande.DEMANDE_SUPPRIME.getStatut());
         return convertToDTO(demandeRepository.save(demandeDTO));
+    }
+
+
+    public Integer updateMotifRejetDemande(Integer id, DemandeDTO demandeDTO) {
+        Optional<Demande> demandeOptional = demandeRepository.findById(id);
+        if (demandeOptional.isPresent()) {
+            Demande demand = demandeOptional.get();
+            demand.setMotifrejet(demandeDTO.getMotifrejet());
+            demand.setStatut(StatusDemande.DEMANDE_REFUSEE.getStatut());
+            Constantes.sendNotificationWhatsapp(demand.getMotifrejet(), demandeOptional.get().getDemandeur().getTelephone());
+//            mailService.sendMailRejectInterne(id);
+            demandeRepository.save(demand);
+            return demand.getId();
+        }
+        return demandeOptional.get().getId(); // Ou lever une exception
     }
 
 

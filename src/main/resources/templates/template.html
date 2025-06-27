@@ -1,0 +1,17 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th> Employee First Name</th>
+        <th> Employee Last Name</th>
+        <th> Employee Email</th>
+    </tr>
+
+    </thead>
+    <tbody>
+    <tr th:each="employee : ${employees}">
+        <td th:text="${employee.prenom}"></td>
+        <td th:text="${employee.nom}"></td>
+        <td th:text="${employee.email}"></td>
+    </tr>
+    </tbody>
+</table>

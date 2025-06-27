@@ -34,6 +34,8 @@ public class SecurityConfiguration {
                 .requestMatchers(
 
                         "/auth/**",
+                        "/test",
+                        "/api/envoi-whatsapp",
                         "/api/utilisateur/register",
                         "/api/utilisateur/authentication",
                         "/api/utilisateur/forget-password",
@@ -60,7 +62,8 @@ public class SecurityConfiguration {
                        "/api/uploads/**",
                         "/simple-form-upload-mvc",
                         "/upload/**",
-                        "/user/**"
+                        "/user/**",
+                        "/api/interco/**"
                 )
                 .permitAll()
                 .anyRequest()
@@ -89,17 +92,17 @@ public class SecurityConfiguration {
 //    }
 
     // If you are configuring CORS in securityFilterChain, you might not need this
-    @Bean
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:5300", "http://fpublique-demarche.sec.gouv.sn"));
-        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        final CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//        config.setAllowedOrigins(Arrays.asList("http://localhost:4200","https://localhost:8080","https://vps107704.serveur-vps.net"));
+//        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
+//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter(source);
+//    }
 
 
 }

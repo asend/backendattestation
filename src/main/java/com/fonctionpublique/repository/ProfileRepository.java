@@ -13,4 +13,8 @@ public interface ProfileRepository extends JpaRepository<Profile,Integer> {
     Optional<Object> findAllById(int num);
 
     Optional<Profile> findByCode(String profileName);
+
+   List<Profile> findByEtat(String code);
+
+
 }
