@@ -1,6 +1,7 @@
 package com.fonctionpublique.services.demandeur;
 
 import com.fonctionpublique.dto.DemandeurDTO;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -11,4 +12,10 @@ public interface DemandeurService {
     DemandeurDTO getById(int id);
     public List<DemandeurDTO> findAll();
     Integer upadateDemandeur(DemandeurDTO demandeurDTO);
+
+
+    @Transactional
+    Integer upadateDemandeurUser(DemandeurDTO demandeurDTO);
+
+    Integer updateMatriculeSoldeDemandeur(Integer id, String matriculeSolde);
 }

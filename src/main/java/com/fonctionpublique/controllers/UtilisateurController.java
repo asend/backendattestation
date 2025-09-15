@@ -6,6 +6,7 @@ import com.fonctionpublique.access.RegistrationRequest;
 import com.fonctionpublique.access.TokenPasswordRequest;
 import com.fonctionpublique.access.password.PasswordRequest;
 import com.fonctionpublique.dto.UtilisateurDTO;
+import com.fonctionpublique.repository.UtilisateurRepository;
 import com.fonctionpublique.services.password.PasswordResetTokenServiceImpl;
 import com.fonctionpublique.services.utilisateur.AuthenticationResponse;
 import com.fonctionpublique.services.utilisateur.UtilisateurServiceImpl;
@@ -31,11 +32,19 @@ public class UtilisateurController {
 
     private final UtilisateurServiceImpl utilisateurServiceImpl;
     private final PasswordResetTokenServiceImpl passwordResetTokenService;
+    private final UtilisateurRepository utilisateurRepository;
 
     @GetMapping("/utilisateurDetails/{id}")
     public ResponseEntity<UtilisateurDTO> getById(@PathVariable int id) {
         return ResponseEntity.ok(utilisateurServiceImpl.getById(id));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<Integer> getUserId(@PathVariable int id) {
+        return utilisateurRepository.findById(id)
+                .map(utilisateur -> ResponseEntity.ok(utilisateur.getId())) // Return user ID
+                .orElseGet(() -> ResponseEntity.notFound().build()); // 404 if not found
+    }
+
     @GetMapping("/nin/{nin}")
     public ResponseEntity<UtilisateurDTO> getByNin(@PathVariable String nin) {
         return ResponseEntity.ok(utilisateurServiceImpl.getByNin(nin));
@@ -53,6 +62,16 @@ public class UtilisateurController {
     public AuthenticationResponse registration(@RequestBody RegistrationRequest registrationRequest) throws IOException, WriterException {
         return utilisateurServiceImpl.registerUtilisateur(registrationRequest);
     }
+    @PostMapping("/register/traitant")
+    public ResponseEntity<Integer> registeTraitant(@RequestBody RegistrationRequest registrationRequest) throws IOException, WriterException {
+        return ResponseEntity.ok(utilisateurServiceImpl.registerTraitant(registrationRequest));
+    }
+
+    @PostMapping("/register/visionnaire")
+    public ResponseEntity<Integer> registeVisionnaire(@RequestBody RegistrationRequest registrationRequest) throws IOException, WriterException {
+        return ResponseEntity.ok(utilisateurServiceImpl.registerVisionnage(registrationRequest));
+    }
+
 
     /**
      * Authentication
@@ -113,5 +132,31 @@ public class UtilisateurController {
     public Long resetPasswordRequest(@RequestBody EmailRequest emailRequest) {
         return passwordResetTokenService.createPasswordResetTokenForUser(emailRequest.getEmail());
     }
+
+    @GetMapping("/getUtilisateurProfile/{code}")
+    public ResponseEntity<List<UtilisateurDTO>> getByProfileCode(@PathVariable String code) {
+        try {
+            List<UtilisateurDTO> utilisateurs = utilisateurServiceImpl.getByCode(code);
+            return ResponseEntity.ok(utilisateurs);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
+    @PutMapping("/update-traitant/{id}")
+    public ResponseEntity<Integer> updateTraitant(@PathVariable("id") int utilisateurId, @RequestBody UtilisateurDTO utilisateurDTO) {
+        Integer updatedUtilisateurId = utilisateurServiceImpl.updateTraitant(utilisateurId, utilisateurDTO);
+        return ResponseEntity.ok(updatedUtilisateurId);
+    }
+
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTraitant(@PathVariable int id) {
+        utilisateurServiceImpl.deleteTraitant(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }

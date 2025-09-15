@@ -27,11 +27,10 @@ public class MailServiceImpl implements MailService {
     @Autowired
     ThymeleafService thymeleafService;
     @Override
-    public void sendMailRejectInterne(Integer id) {
+    public Integer sendMailRejectInterne(Integer id) {
         DemandeDTO demandeDTO = demandeService.getById(id);
         try {
             MimeMessage message = mailSender.createMimeMessage();
-
             MimeMessageHelper helper = new MimeMessageHelper(
                     message,
                     MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -49,14 +48,14 @@ public class MailServiceImpl implements MailService {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return id;
     }
 
     @Override
-    public void sendMailRejectExterne(Integer id) {
+    public Integer sendMailRejectExterne(Integer id) {
         DemandeDTO demandeDTO = demandeService.getById(id);
         try {
             MimeMessage message = mailSender.createMimeMessage();
-
             MimeMessageHelper helper = new MimeMessageHelper(
                     message,
                     MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -74,14 +73,14 @@ public class MailServiceImpl implements MailService {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return id;
     }
 
     @Override
-    public void sendMailApprouvee(Integer id) {
+    public Integer sendMailApprouvee(Integer id) {
         DemandeDTO demandeDTO = demandeService.getById(id);
         try {
             MimeMessage message = mailSender.createMimeMessage();
-
             MimeMessageHelper helper = new MimeMessageHelper(
                     message,
                     MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -105,5 +104,46 @@ public class MailServiceImpl implements MailService {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return id;
+    }
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public Integer sendMailPdfRejet(Integer id) {
+        DemandeDTO demandeDTO = demandeService.getById(id);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("name", demandeDTO.getDemandeurDTO().getFullName());
+            helper.setFrom(Params.EMAILSENDER);
+            helper.setText(thymeleafService.createContent("mail-rejet.html", variables), true);
+            helper.setTo(demandeDTO.getDemandeurDTO().getEmail());
+            helper.setSubject("attestation");
+            File file = new File(Params.DIRECTORYATTESTATION +"/" + demandeDTO.getUrlattestation());
+            if (file.exists()) {
+                FileSystemResource fileSystemResource = new FileSystemResource(file);
+                helper.addAttachment("attestation_de_non_appartenance.pdf", fileSystemResource);
+                mailSender.send(message);
+                System.out.println("Mail with attachment sent successfully..");
+            } else {
+                System.out.println("File not found: " + file.getAbsolutePath());
+                throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return id;
     }
 }

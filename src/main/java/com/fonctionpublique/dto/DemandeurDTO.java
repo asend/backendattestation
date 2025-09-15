@@ -1,6 +1,8 @@
 package com.fonctionpublique.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fonctionpublique.entities.Demande;
+import com.fonctionpublique.entities.FileUpload;
 import jakarta.persistence.Column;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +13,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,7 +28,8 @@ public class DemandeurDTO {
     @NotEmpty(message = "telephone ne doit pas etre null")
     @NotBlank(message = "telephone ne doit pas etre vide")
     private String telephone;
-    private String datedenaissance;
+    @JsonFormat(pattern="dd-MM-yyyy")
+    private LocalDate datedenaissance;
     @NotNull(message = "lieu de naissance ne doit pas etre null")
     @NotEmpty(message = "lieu de naissance ne doit pas etre null")
     @NotBlank(message = "lieu de naissance ne doit pas etre vide")
@@ -51,4 +56,9 @@ public class DemandeurDTO {
     private Demande demandeDTO;
     private byte[] displayPicture;
     private String type;
+    private List<FileUpload> fieluploads;
+    private String region;
+    private String departement;
+    private String matriculeSolde;
+
 }

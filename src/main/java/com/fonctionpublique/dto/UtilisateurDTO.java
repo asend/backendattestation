@@ -1,14 +1,9 @@
 package com.fonctionpublique.dto;
 
-import com.fonctionpublique.entities.Demandeur;
-import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,8 +20,11 @@ public class UtilisateurDTO {
     private String typePieces;
     private boolean statut;
     private String signature;
+    private String titre;
     private DemandeurDTO demandeurDTO;
+    private ProfileDTO profileDTO;
     private String fullName;
+    private String telephone;
 
 
 }

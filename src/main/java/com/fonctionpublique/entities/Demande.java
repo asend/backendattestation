@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -23,10 +24,11 @@ public class Demande {
     private int id;
     private String urlattestation;
     private String statut;
+    private String motifrejet;
     private String numerodemande;
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime datedemande;
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime datetraitement;
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate dateexpiration;
@@ -44,6 +46,8 @@ public class Demande {
     @ManyToOne
     @JoinColumn(name = "id_utilisateur")
     private Utilisateur utilisateur;
+    private LocalDateTime tempsEcoule;
+    private String dureeTraitement;
 
     public boolean isValide() {
         validite=false;

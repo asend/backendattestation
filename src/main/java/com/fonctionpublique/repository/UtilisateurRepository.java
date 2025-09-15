@@ -1,5 +1,6 @@
 package com.fonctionpublique.repository;
 
+import com.fonctionpublique.entities.Profile;
 import com.fonctionpublique.entities.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,17 +21,15 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Intege
     boolean existsByEmail(String email);
     Optional<Utilisateur> findByEmail(String email);
     boolean existsByNin(String nin);
-
     List<Utilisateur> findAll();
     @Query("select d.email from Utilisateur d ")
     List<String> getAllAdmin();
     @Query("select d.email from Utilisateur d ")
     Utilisateur findAllEmail(String email);
-
-
     Optional<Utilisateur> findByNin(String nin);
 
-    //Optional<Utilisateur> findByStatut(String statut);
+    @Query("SELECT u FROM Utilisateur u WHERE u.profile = :profile")
+    //List<Utilisateur> findByProfil(Profile profil);
+    List<Utilisateur> findByProfil(@Param("profile") Profile profil);
 
-//    Utilisateur findById();
 }
